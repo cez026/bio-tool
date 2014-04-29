@@ -117,13 +117,13 @@ def main():
 
     for gm_es_gene in gm_es_genes:
         for aat_gene in aat_muris_genes:
-            if gm_es_gene.shares_exon_structure_with( thing=aat_gene ) == True:
+            if gm_es_gene.shares_exon_structure_with( thing=aat_gene, stop_tolerant=True ) == True:
                 genemark_aat_shared_genes.append(gm_es_gene)
                 break
 
         if gm_es_gene not in genemark_aat_shared_genes:
             for aat_gene in aat_parvum_genes:
-                if gm_es_gene.shares_exon_structure_with( thing=aat_gene ) == True:
+                if gm_es_gene.shares_exon_structure_with( thing=aat_gene, stop_tolerant=True ) == True:
                     genemark_aat_shared_genes.append(gm_es_gene)
                     break
 
@@ -207,13 +207,13 @@ def main():
         if cegma_gene in cegma_not_matching_gm_es:
             
             for aat_gene in aat_muris_genes:
-                if cegma_gene.shares_exon_structure_with( thing=aat_gene ) == True:
+                if cegma_gene.shares_exon_structure_with( thing=aat_gene, stop_tolerant=True ) == True:
                     cegma_not_gmes_with_aat.append(cegma_gene)
                     break
 
             if cegma_gene not in cegma_not_gmes_with_aat:
                 for aat_gene in aat_parvum_genes:
-                    if cegma_gene.shares_exon_structure_with( thing=aat_gene ) == True:
+                    if cegma_gene.shares_exon_structure_with( thing=aat_gene, stop_tolerant=True ) == True:
                         cegma_not_gmes_with_aat.append(gm_es_gene)
                         break
 
@@ -246,6 +246,24 @@ def main():
 
     html_out.write("</body>\n")
     html_out.write("</html>\n")
+
+    exon_fh = open('exon_counts', 'wt')
+    
+    for gene in type1_best:
+        for mRNA in gene.mRNAs():
+            exon_fh.write("TYPE1_BEST\tGenemark-ES\t{0}\t{1}\n".format(len(mRNA.exons()), gene.id) )
+
+    for gene in type2_best:
+        for mRNA in gene.mRNAs():
+            exon_fh.write("TYPE2_BEST\tGenemark-ES\t{0}\t{1}\n".format(len(mRNA.exons()), gene.id) )
+
+    for gene in type2_better:
+        for mRNA in gene.mRNAs():
+            exon_fh.write("TYPE2_BETTER\tGenemark-ES\t{0}\t{1}\n".format(len(mRNA.exons()), gene.id) )
+
+    for gene in type3_still_better:
+        for mRNA in gene.mRNAs():
+            exon_fh.write("TYPE3_STILL_BETTER\tCEGMA\t{0}\t{1}\n".format(len(mRNA.exons()), gene.id) )
 
     #print("They are:\n")
     #for gene in gm_cegma_expression_aat_shared_genes:

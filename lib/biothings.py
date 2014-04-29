@@ -88,7 +88,7 @@ class LocatableThing:
 
         return False
 
-    def has_same_coordinates_as( self, on=None, thing=None ):
+    def has_same_coordinates_as( self, on=None, thing=None, stop_tolerant=False ):
         '''
         Reports True/False depending on whether the calling object shares both start/stop coordinates
         with the passed 'thing' when considering locations 'on' the passed molecule biothing object.
@@ -104,6 +104,9 @@ class LocatableThing:
                         continue
                     
                     if this_loc.fmin == other_loc.fmin and this_loc.fmax == other_loc.fmax:
+                        return True
+                    ## experimental, for those features mixed stop codon inclusion
+                    elif stop_tolerant == True and this_loc.fmin == other_loc.fmin and this_loc.fmax == other_loc.fmax + 3:
                         return True
 
         # if we got here, there wasn't a match
@@ -532,7 +535,7 @@ class Gene( LocatableThing ):
     def RNAs(self):
         return self.children['mRNA'] + self.children['tRNA'] + self.children['rRNA']
 
-    def shares_exon_structure_with( self, thing=None ):
+    def shares_exon_structure_with( self, thing=None, stop_tolerant=False ):
         """
         This checks if two genes have only one mRNA and, if so, compares their internal
         exon structure.  Returns True if they all match completely.
@@ -550,7 +553,7 @@ class Gene( LocatableThing ):
             ref_exon_count += 1
             
             for other_exon in other_mRNAs[0].exons():
-                if ref_exon.has_same_coordinates_as( thing=other_exon ):
+                if ref_exon.has_same_coordinates_as( thing=other_exon, stop_tolerant=stop_tolerant ):
                     exon_matches_found += 1
                     break
 
